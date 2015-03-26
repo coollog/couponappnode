@@ -1,5 +1,12 @@
 # couponappnode
 
+## Setup
+
+Install the necessary packages:
+
+`npm install --save express mongodb jade socket.io`
+
+
 Make sure to have a config.js in server/ with the following:
 
 ```

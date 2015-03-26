@@ -16,3 +16,7 @@ module.exports = {
   collections: [array of collections to use in the mongodb]
 }
 ```
+
+## Running
+
+Run the server: `node index`

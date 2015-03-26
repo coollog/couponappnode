@@ -7,11 +7,12 @@ Install the necessary packages:
 `npm install --save express mongodb jade socket.io`
 
 
-Make sure to have a `server/config.js` with the following:
+Make sure to have a `config.js` with the following:
 
 ```
 module.exports = {
-  port: [port for socket.io],
+  httpport: [port for http server],
+  ioport: [port for socket.io],
   mongouri: [mongodb uri for database],
   collections: [array of collections to use in the mongodb]
 }
@@ -20,3 +21,5 @@ module.exports = {
 ## Running
 
 Run the server: `node index`
+
+Right now, it's just a simple login/register thing. Connect to http with `localhost:8888`.

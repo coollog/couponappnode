@@ -1,2 +1,3 @@
-var http   = require('./server/http'),
-    socket = require('./server/socket');
+var config = require('./config.js'),
+    http   = require('./server/http')(config),
+    socket = require('./server/socket')(config);

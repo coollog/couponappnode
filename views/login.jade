@@ -1,0 +1,16 @@
+form(class="login")
+  input(type="email", name="email", placeholder="Email")
+  br
+  input(type="password", name="password", placeholder="Password")
+  br
+  input(type="submit", value="Login")
+  input(type="button", class="toRegister", value="Register")
+script.
+  $('form.login').submit(function() {
+    socket.emit('login', $(this).serializeArray());
+
+    return false;
+  });
+  $('.toRegister').click(function() {
+    socket.emit('toRegister');
+  });

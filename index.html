@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO login</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="flash">
+
+    </div>
+    <div class="content">
+
+    </div>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      var socket = io();
+      
+      socket.on('html', function (elem, html) {
+        $(elem).html(html);
+      });
+      socket.on('flash', function (html) {
+        $('.flash').html(html);
+      });
+    </script>
+  </body>
+</html>

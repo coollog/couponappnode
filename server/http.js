@@ -7,6 +7,6 @@ module.exports = function (config) {
   });
 
   http.listen(config.httpport, function () {
-    console.log('listening on *:' + config.httpport);
+    console.log('http listening on:' + config.httpport);
   });
 }

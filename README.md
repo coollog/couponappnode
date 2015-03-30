@@ -4,7 +4,7 @@
 
 Install the necessary packages:
 
-`npm install --save express mongodb jade socket.io`
+`npm install --save express mongodb jade socket.io mocha`
 
 
 Make sure to have a `config.js` with the following:

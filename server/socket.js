@@ -40,13 +40,17 @@ module.exports = function (config) {
   // initialization code - shouldn't need custom code
 
   var server = this;
-  var io = require('socket.io')(config.ioport);
-  var sockets = io.sockets.connected;
+  var io = require('socket.io')();
+  this.sockets = io.sockets.connected;
 
   setup(function () {
     io.on('connection', function (socket) {
       Connect(server, socket); // when a client connects
       Process(server, socket); // all comm processing
     });
+
+    io.listen(config.ioport);
+
+    console.log('socketio listening on:' + config.ioport);
   });
 }

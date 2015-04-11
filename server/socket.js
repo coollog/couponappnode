@@ -3,23 +3,11 @@
 module.exports = function (config) {
   var fs = require('fs'),
       util = require('./util'),
-      jade = require('jade'),
       MongoClient = require('mongodb').MongoClient,
       Process = require('./io/process'),
       Connect = require('./io/connect');
 
   function setup(callback) { // setup function, shouldn't need custom code
-    function compileViews() { // jade-compiles all the views for use
-      server.view = {};
-
-      fs.readdirSync(__dirname+'/views').forEach(function (name) {
-        name = name.split('.');
-        name.pop();
-        name = name.join('.');
-        server.view[name] = jade.compileFile(__dirname+'/views/'+name+'.jade');
-      });
-    }
-
     function setupMongo() { // connect to mongo db
       MongoClient.connect(config.mongouri, function (err, db) {
         server.db = db;
@@ -33,7 +21,6 @@ module.exports = function (config) {
       });
     }
 
-    compileViews();
     setupMongo();
   }
 

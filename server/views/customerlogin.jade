@@ -1,0 +1,23 @@
+form(class="register")
+  input(type="email", name="email", placeholder="Email")
+  br
+  input(type="password", name="password", placeholder="Password")
+  br
+  input(type="submit", value="Login")
+
+script(src="https://cdn.socket.io/socket.io-1.2.0.js")
+script(src="http://code.jquery.com/jquery-1.11.1.js")
+script.
+  var socket = io.connect('localhost:8080');
+
+  $('form.register').submit(function() {
+    socket.emit('customer login', $(this).serializeArray());
+
+    return false;
+  });
+  socket.on('customer login fail', function (err) {
+    console.log('login failed');
+  });
+  socket.on('customer login succeed', function (_id, firstname, lastname) {
+    console.log('login succeeded: ' + [_id, firstname, lastname].join(', '));
+  });

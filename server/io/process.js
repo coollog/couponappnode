@@ -8,12 +8,16 @@ module.exports = function(server, socket) {
   socket.login = function (type, userdata, _id, emit) {
     var data = {
       type: type,
+      _id: userdata._id,
       email: userdata.email,
       password: userdata.password
     }
     socket.user = data;
     if (typeof emit !== 'undefined') emit();
     console.log(type + ' login: ' + data.email + ' : ' + data.password);
+  }
+  socket.loggedIn = function (type) {
+    return ('user' in socket && socket.user.type == type);
   }
 
   // Customer side
@@ -64,22 +68,72 @@ module.exports = function(server, socket) {
             firstname: data.firstname,
             lastname: data.lastname
           };
-          server.db['customers'].insertOne(userdata, function(err, result) {
-            if (err == null) succeed(result.ops[0]._id);
+          server.db['customers'].insertOne(userdata, function (err, res) {
+            if (err == null) succeed(res.ops[0]._id);
             else fail('could not make user');
           });
         } else fail('email already taken');
       });
     });
 
+    // CUSTOMER EDIT PROFILE
+    socket.on('customer edit', function (data) {
+      if (!socket.loggedIn('customer')) return;
+
+      data = util.formJSON(data);
+      function fail() {
+        socket.emit('customer edit fail');
+        console.log('customer edit profile failed: ' + data.email);
+      }
+      function succeed() {
+        socket.emit('customer edit succeed');
+        console.log('customer edit profile succeeded: ' + data.email);
+        // UPDATE socket.user IF NECESSARY
+      }
+
+      server.db['customers'].findOneAndUpdate({
+        _id: socket.user._id
+      }, data, function (err, r) {
+        if (err == null && doc != null) succeed();
+        else fail();
+      });
+    });
+
     // LIST OF DEALS
     socket.on('deals', function (data) {
-      
+      if (!socket.loggedIn('customer')) return;
+
+      function succeed(deals) {
+        socket.emit('deals', deals);
+        console.log('deals: ' + socket.user.email);
+      }
+
+      server.db['deals'].find().toArray(function (err, docs) {
+        if (err == null) succeed(docs);
+        else fail();
+      });
     });
 
     // VIEW DEAL
     socket.on('deal', function (data) {
+      if (!socket.loggedIn('customer')) return;
+
+      data = util.formJSON(data);
+      function fail(err) {
+        socket.emit('deal fail', err);
+        console.log('retrieve deal failed: ' + socket.user.email + ' - ' + data._id);
+      }
+      function succeed(deal) {
+        socket.emit('deal succeed', deal);
+        console.log('retrieve deal succeeded: ' + socket.user.email + ' - ' + data._id);
+      }
       
+      server.db['deals'].findOne({
+        _id: data._id
+      }, function (err, doc) {
+        if (err == null) succeed(doc);
+        else fail('nonexistent deal');
+      });
     });
 
     socket.on('search deals', function (data) {
@@ -87,11 +141,47 @@ module.exports = function(server, socket) {
     });
 
     socket.on('claim deal', function (data) {
+      if (!socket.loggedIn('customer')) return;
       
+      data = util.formJSON(data);
+      function fail(err) {
+        socket.emit('claim deal fail', err);
+        console.log('claim deal failed: ' + socket.user.email + ' - ' + data._id);
+      }
+      function succeed() {
+        socket.emit('claim deal succeed');
+        console.log('claim deal succeeded: ' + socket.user.email + ' - ' + data._id);
+      }
+
+      server.db['deals'].find({
+        _id: data._id
+      }, function (err, doc) {
+        if (err == null) {
+          doc['claimed'] = socket.user._id;
+          server.db['deals'].save(doc, function (err, res) {
+            if (err == null) {
+              // DO PAYMENT PROCESSING AND SHIT
+              succeed();
+            } else fail('cannot claim deal');
+          });
+        } else fail('nonexistent deal');
+      });
     });
 
     socket.on('customer deals', function (data) {
+      if (!socket.loggedIn('customer')) return;
       
+      function succeed(deals) {
+        socket.emit('customer deals', deals);
+        console.log('retrieve customer deals: ' + socket.user.email);
+      }
+
+      server.db['deals'].find({
+        claimed: socket.user._id
+      }).toArray(function (err, docs) {
+        if (err == null) succeed(docs);
+        else fail();
+      });
     });
 
 
@@ -145,16 +235,39 @@ module.exports = function(server, socket) {
             company: null,
             phone: data.phone
           };
-          server.db['businesses'].insertOne(userdata, function(err, result) {
-            if (err == null) succeed(result.ops[0]._id, userdata);
+          server.db['businesses'].insertOne(userdata, function (err, res) {
+            if (err == null) succeed(res.ops[0]._id, userdata);
             else fail('could not make user');
           });
         } else fail('email already taken');
       });
     });
 
+    // BUSINESS EDIT PROFILE
+    socket.on('business edit', function (data) {
+      data = util.formJSON(data);
+      function fail() {
+        socket.emit('business edit fail');
+        console.log('business edit profile failed: ' + data.email);
+      }
+      function succeed() {
+        socket.emit('business edit succeed');
+        console.log('business edit profile succeeded: ' + data.email);
+        // UPDATE socket.user IF NECESSARY
+      }
+
+      server.db['businesses'].findOneAndUpdate({
+        _id: socket.user._id
+      }, data, function (err, r) {
+        if (err == null && doc != null) succeed();
+        else fail();
+      });
+    });
+
     // GET COMPANY PROFILE
     socket.on('get company', function (data) {
+      if (!socket.loggedIn('business')) return;
+
       function fail() {
         socket.emit('get company fail');
         console.log('get company profile fail: ' + socket.user.email);
@@ -174,6 +287,8 @@ module.exports = function(server, socket) {
 
     // MAKE OR EDIT COMPANY PROFILE
     socket.on('put company', function (data) {
+      if (!socket.loggedIn('business')) return;
+
       data = util.formJSON(data);
       function fail(err) {
         socket.emit('put company fail', err);
@@ -203,57 +318,51 @@ module.exports = function(server, socket) {
     });
 
     socket.on('put deal', function (data) {
-      
+      if (!socket.loggedIn('business')) return;
+
+      data = util.formJSON(data);
+      function fail() {
+        socket.emit('put deal fail');
+        console.log('deal fail: ' + socket.user.email);
+      }
+      function succeed(_id) {
+        socket.emit('put deal succeed', _id);
+        console.log('deal succeed: ' + socket.user.email + ' - ' + _id);
+      }
+
+      data['business'] = socket.user._id;
+      if ('_id' in data) {
+        server.db['deals'].findOneAndUpdate({
+          _id: data._id
+        }, data, function (err, r) {
+          if (err == null) succeed(data._id);
+          else fail();
+        });
+      } else {
+        server.db['deals'].insertOne(data, function (err, res) {
+          if (err == null) succeed(res.ops[0]._id);
+          else fail();
+        });
+      }
     });
 
     socket.on('business deals', function (data) {
-      
+      if (!socket.loggedIn('business')) return;
+
+      function succeed(deals) {
+        socket.emit('business deals', deals);
+        console.log('business deals: ' + socket.user.email);
+      }
+
+      server.db['deals'].find({
+        _id: socket.user._id
+      }).toArray(function (err, docs) {
+        if (err == null) succeed(docs);
+        else fail();
+      });
     });
 
     socket.on('disconnect', function () {
       console.log('user disconnected: ' + socket.id);
     });
 }
-
-// module.exports = function(server, socket) {
-//   socket.on('register', function (data) {
-//     data = util.formJSON(data);
-
-//     server.db['users'].insert({
-//       email: data.email,
-//       password: data.password
-//     });
-
-//     socket.emit('html', '.content', server.view['login']());
-
-//     console.log('new registrant: ' + data.email + ' : ' + data.password);
-//   });
-
-//   socket.on('login', function (data) {
-//     data = util.formJSON(data);
-    
-//     server.db['users'].findOne({
-//       email: data.email,
-//       password: data.password
-//     }, function (err, doc) {
-//       if (doc == null) {
-//         socket.emit('flash', 'login failed');
-//       } else {
-//         var locals = {
-//           email: data.email
-//         }
-//         socket.emit('html', '.content', server.view['main'](locals));
-
-//         console.log('login by: ' + data.email);
-//       }
-//     });
-//   });
-
-//   socket.on('toLogin', function() {
-//     socket.emit('html', '.content', server.view['login']());
-//   });
-
-//   socket.on('toRegister', function() {
-//     socket.emit('html', '.content', server.view['register']());
-//   });
-// }

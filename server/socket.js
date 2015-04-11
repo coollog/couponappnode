@@ -10,6 +10,11 @@ module.exports = function (config) {
   function setup(callback) { // setup function, shouldn't need custom code
     function setupMongo() { // connect to mongo db
       MongoClient.connect(config.mongouri, function (err, db) {
+        if (err != null) {
+          console.dir(err);
+          process.exit();
+        }
+        
         server.db = db;
         config.collections.forEach(function (name) {
           server.db[name] = db.collection(name);

@@ -61,18 +61,20 @@ module.exports = function(server, socket) {
       server.db['customers'].findOne({
         email: data.email
       }, function (err, doc) {
-        if (err == null && doc == null) {
-          var userdata = {
-            email: data.email,
-            password: data.password,
-            firstname: data.firstname,
-            lastname: data.lastname
-          };
-          server.db['customers'].insertOne(userdata, function (err, res) {
-            if (err == null) succeed(res.ops[0]._id);
-            else fail('could not make user');
-          });
-        } else fail('email already taken');
+        if (err == null) {
+          if (doc == null) {
+            var userdata = {
+              email: data.email,
+              password: data.password,
+              firstname: data.firstname,
+              lastname: data.lastname
+            };
+            server.db['customers'].insertOne(userdata, function (err, res) {
+              if (err == null) succeed(res.ops[0]._id);
+              else fail('could not make user');
+            });
+          } else fail('email already taken');
+        } else fail(err.message);
       });
     });
 

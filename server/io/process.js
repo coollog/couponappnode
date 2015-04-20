@@ -48,9 +48,12 @@ module.exports = function(server, socket) {
     // CUSTOMER REGISTRATION
     socket.on('customer register', function (data) {
       data = util.formJSON(data);
-      function fail(err) {
+      function fail(err, data) {
         socket.emit('customer register fail', err);
-        console.log('existing registrant: ' + data.email + ' : ' + data.password);
+        if (typeof data !== 'undefined')
+          console.log('existing registrant: ' + data.email + ' : ' + data.password);
+        else
+          console.log('registration fail: ' + err);
       }
       function succeed(_id) {
         socket.emit('customer register succeed', _id);
@@ -73,7 +76,7 @@ module.exports = function(server, socket) {
               if (err == null) succeed(res.ops[0]._id);
               else fail('could not make user');
             });
-          } else fail('email already taken');
+          } else fail('email already taken', data);
         } else fail(err.message);
       });
     });

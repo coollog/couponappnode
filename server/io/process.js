@@ -57,7 +57,7 @@ module.exports = function(server, socket) {
         else
           console.log('registration fail: ' + err);
       }
-      function succeed(_id) {
+      function succeed(_id, userdata) {
         socket.emit('customer register succeed', _id);
         console.log('new registrant: ' + data.email + ' : ' + data.password);
         socket.login('customer', userdata, _id);
@@ -75,7 +75,7 @@ module.exports = function(server, socket) {
               lastname: data.lastname
             };
             server.db['customers'].insertOne(userdata, function (err, res) {
-              if (err == null) succeed(res.ops[0]._id);
+              if (err == null) succeed(res.ops[0]._id, userdata);
               else fail('could not make user');
             });
           } else fail('email already taken', data);

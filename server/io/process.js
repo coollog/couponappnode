@@ -48,8 +48,6 @@ module.exports = function(server, socket) {
     // CUSTOMER REGISTRATION
     socket.on('customer register', function (data) {
       data = util.formJSON(data);
-      console.log('debuggin');
-      console.dir(data);
       function fail(err, data) {
         socket.emit('customer register fail', err);
         if (typeof data !== 'undefined')

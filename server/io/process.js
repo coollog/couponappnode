@@ -47,6 +47,7 @@ module.exports = function(server, socket) {
 
     // CUSTOMER REGISTRATION
     socket.on('customer register', function (data) {
+      console.log("got: " + data);
       data = util.formJSON(data);
       function fail(err, data) {
         socket.emit('customer register fail', err);

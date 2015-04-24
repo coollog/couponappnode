@@ -1,8 +1,10 @@
 // ALL CODE FOR HANDLING SOCKETIO MESSAGES GOES IN THIS FILE
 // (though can partition into multiple files)
 
-module.exports = function(server, socket, stripe) {
-  var util = require('../util');
+module.exports = function(server, socket) {
+  var config = require('../../config'),
+      util = require('../util'),
+      stripe = require('../../stripe')(config);
 
   // Helper functions
   socket.login = function (type, userdata, _id, emit) {
@@ -228,7 +230,7 @@ module.exports = function(server, socket, stripe) {
 
     socket.on('stripe charge', function (data) {
       if (!socket.loggedIn('customer')) return;
-      
+
       data = util.formJSON(data);
       function fail(err) {
         socket.emit('stripe charge fail', err);

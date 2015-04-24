@@ -1,10 +1,8 @@
 // ALL CODE FOR HANDLING SOCKETIO MESSAGES GOES IN THIS FILE
 // (though can partition into multiple files)
 
-module.exports = function(server, socket) {
-  var config = require('../../config'),
-      util = require('../util'),
-      stripe = require('../../stripe')(config);
+module.exports = function(server, socket, stripe) {
+  var util = require('../util');
 
   // Helper functions
   socket.login = function (type, userdata, _id, emit) {

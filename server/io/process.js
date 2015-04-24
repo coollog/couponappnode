@@ -1,7 +1,7 @@
 // ALL CODE FOR HANDLING SOCKETIO MESSAGES GOES IN THIS FILE
 // (though can partition into multiple files)
 
-module.exports = function(server, socket) {
+module.exports = function(server, socket, stripe) {
   var util = require('../util');
 
   // Helper functions
@@ -10,7 +10,9 @@ module.exports = function(server, socket) {
       type: type,
       _id: userdata._id,
       email: userdata.email,
-      password: userdata.password
+      password: userdata.password,
+      firstname: userdata.firstname,
+      lastname: userdata.lastname
     }
     socket.user = data;
     if (typeof emit !== 'undefined') emit();
@@ -70,7 +72,9 @@ module.exports = function(server, socket) {
               email: data.email,
               password: data.password,
               firstname: data.firstname,
-              lastname: data.lastname
+              lastname: data.lastname,
+              claimed: [],
+              stripeid: null
             };
             server.db['customers'].insertOne(userdata, function (err, res) {
               if (err == null) succeed(res.ops[0]._id, userdata);
@@ -186,6 +190,67 @@ module.exports = function(server, socket) {
       }).toArray(function (err, docs) {
         if (err == null) succeed(docs);
         else fail();
+      });
+    });
+
+    socket.on('stripe token', function (data) {
+      data = util.formJSON(data);
+      function fail(err) {
+        socket.emit('stripe token fail', err);
+        console.log('stripe token failed: ' + socket.user.email + ': ' + data.token + ' b/c ' + err);
+      }
+      function succeed(stripeid) {
+        socket.emit('stripe token succeed', stripeid);
+        console.log('stripe token succeeded: ' + socket.user.email + ': ' + stripeid);
+      }
+
+      stripe.createCustomer(
+        data.token, 
+        socket.user.email, 
+        [socket.user.firstname, socket.user.lastname].join(' '),
+        function (err, stripeid) {
+          if (err) fail(err.message);
+          else {
+            server.db['customers'].findOneAndUpdate({
+              _id: socket.user._id
+            }, {
+              stripeid: stripeid
+            }, function (err, r) {
+              if (err == null && doc != null) succeed(stripeid);
+              else fail('could not update user');
+            });
+          }
+        }
+      )
+    });
+
+    socket.on('stripe charge', function (data) {
+      data = util.formJSON(data);
+      function fail(err) {
+        socket.emit('stripe charge fail', err);
+        console.log('stripe charge failed: ' + socket.user.email + ': $' + data.amount + ' for ' + data.description + ' b/c ' + err);
+      }
+      function succeed() {
+        socket.emit('stripe charge succeed');
+        console.log('stripe charge succeeded: ' + socket.user.email + ': $' + data.amount + ' for ' data.description);
+      }
+
+      server.db['customers'].findOne({
+        _id: socket.user._id
+      }, function (err, doc) {
+        if (err == null) {
+          if (doc.stripeid != null) {
+            stripe.chargeCustomer(
+              socket.user.stripeid,
+              data.amount,
+              data.description,
+              function (err) {
+                if (err == null) succeed();
+                else fail(err.message);
+              }
+            );
+          } else fail('must create stripe id first');
+        } else fail('customer error');
       });
     });
 

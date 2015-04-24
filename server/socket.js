@@ -4,6 +4,7 @@ module.exports = function (config) {
   var fs = require('fs'),
       util = require('./util'),
       MongoClient = require('mongodb').MongoClient,
+      stripe = require('./stripe')(config),
       Process = require('./io/process'),
       Connect = require('./io/connect');
 
@@ -37,7 +38,7 @@ module.exports = function (config) {
 
   setup(function () {
     io.on('connection', function (socket) {
-      Connect(server, socket); // when a client connects
+      Connect(server, socket, stripe); // when a client connects
       Process(server, socket); // all comm processing
     });
 

@@ -4,7 +4,7 @@ module.exports = function (config) {
   var fs = require('fs'),
       util = require('./util'),
       MongoClient = require('mongodb').MongoClient,
-      stripe = require('./stripe')(config),
+      stripe = require('../stripe')(config),
       Process = require('./io/process'),
       Connect = require('./io/connect');
 

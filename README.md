@@ -4,7 +4,7 @@
 
 Install the necessary packages:
 
-`npm install --save express mongodb jade socket.io mocha`
+`npm install --save express mongodb jade socket.io mocha stripe`
 
 
 Make sure to have a `config.js` with the following (set your own values in <>):
@@ -18,7 +18,8 @@ module.exports = {
     'customers',
     'businesses',
     'deals'
-  ]
+  ],
+  stripekey: <stripe api key secret>
 }
 ```
 

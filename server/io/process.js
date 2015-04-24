@@ -195,7 +195,6 @@ module.exports = function(server, socket, stripe) {
 
     socket.on('stripe token', function (data) {
       data = util.formJSON(data);
-      console.log("STRIPE TOKEN: " + data.token);
       function fail(err) {
         socket.emit('stripe token fail', err);
         console.log('stripe token failed: ' + socket.user.email + ': ' + data.token + ' b/c ' + err);

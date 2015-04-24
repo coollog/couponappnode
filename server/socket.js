@@ -38,8 +38,8 @@ module.exports = function (config) {
 
   setup(function () {
     io.on('connection', function (socket) {
-      Connect(server, socket, stripe); // when a client connects
-      Process(server, socket); // all comm processing
+      Connect(server, socket); // when a client connects
+      Process(server, socket, stripe); // all comm processing
     });
 
     io.listen(config.ioport);

@@ -232,7 +232,7 @@ module.exports = function(server, socket, stripe) {
       }
       function succeed() {
         socket.emit('stripe charge succeed');
-        console.log('stripe charge succeeded: ' + socket.user.email + ': $' + data.amount + ' for ' data.description);
+        console.log('stripe charge succeeded: ' + socket.user.email + ': $' + data.amount + ' for ' + data.description);
       }
 
       server.db['customers'].findOne({

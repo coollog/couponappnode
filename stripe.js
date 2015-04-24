@@ -37,7 +37,7 @@ module.exports = function (config) {
         person = customer.id;
 
         // add a card to this customer
-        stripe.customers.createSource(person, {source: cardsource}, function (err, card) {
+        stripe.customers.createSource(person, {source: cardsource.split(' ')[0]}, function (err, card) {
           if (err) 
             callback(err, null);
           else {

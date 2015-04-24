@@ -194,6 +194,8 @@ module.exports = function(server, socket, stripe) {
     });
 
     socket.on('stripe token', function (data) {
+      if (!socket.loggedIn('customer')) return;
+
       data = util.formJSON(data);
       function fail(err) {
         socket.emit('stripe token fail', err);
@@ -225,6 +227,8 @@ module.exports = function(server, socket, stripe) {
     });
 
     socket.on('stripe charge', function (data) {
+      if (!socket.loggedIn('customer')) return;
+      
       data = util.formJSON(data);
       function fail(err) {
         socket.emit('stripe charge fail', err);

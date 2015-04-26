@@ -217,7 +217,7 @@ module.exports = function(server, socket, stripe) {
               _id: socket.user._id
             }, {
               stripeid: stripeid
-            }, function (err, r) {
+            }, function (err, doc) {
               if (err == null && doc != null) succeed(stripeid);
               else fail('could not update user');
             });

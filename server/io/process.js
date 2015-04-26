@@ -42,7 +42,7 @@ module.exports = function(server, socket, stripe) {
       };
       server.db['customers'].findOne(userdata, function (err, doc) {
         if (err == null && doc != null)
-          succeed(doc._id, doc.firstname, doc.lastname, doc.redacted);
+          succeed(doc._id, doc.firstname, doc.lastname, doc.striperedacted);
         else fail();
       });
     });
@@ -75,7 +75,7 @@ module.exports = function(server, socket, stripe) {
               lastname: data.lastname,
               claimed: [],
               stripeid: null,
-              redacted: null
+              striperedacted: null
             };
             server.db['customers'].insertOne(userdata, function (err, res) {
               if (err == null) succeed(res.ops[0]._id, userdata);

@@ -166,8 +166,6 @@ module.exports = function(server, socket, stripe) {
         console.log('claim deal succeeded: ' + socket.user.email + ' - ' + data._id);
       }
 
-      console.dir(data);
-      console.dir(new ObjectID(data._id));
       server.db['deals'].findOne({
         _id: new ObjectID(data._id)
       }, function (err, doc) {
@@ -187,10 +185,7 @@ module.exports = function(server, socket, stripe) {
                   if (err == null && doc != null) succeed();
                   else fail('could not update user');
                 });
-              } else {
-                console.log(err.message);
-                fail('cannot claim deal');
-              }
+              } else fail('cannot claim deal');
             });
           } else fail('deal already claimed');
         } else fail('nonexistent deal');

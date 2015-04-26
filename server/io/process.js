@@ -5,10 +5,10 @@ module.exports = function(server, socket, stripe) {
   var util = require('../util');
 
   // Helper functions
-  socket.login = function (type, userdata, _id, emit) {
+  socket.login = function (type, userdata, emit) {
     var data = {
       type: type,
-      _id: _id,
+      _id: userdata._id,
       email: userdata.email,
       password: userdata.password,
       firstname: userdata.firstname,
@@ -31,9 +31,9 @@ module.exports = function(server, socket, stripe) {
         socket.emit('customer login fail');
         console.log('login failed: ' + data.email + ' : ' + data.password);
       }
-      function succeed(_id, firstname, lastname, striperedacted) {
-        socket.login('customer', doc, _id, function() {
-          socket.emit('customer login succeed', _id, firstname, lastname, striperedacted);
+      function succeed(doc) {
+        socket.login('customer', doc, function() {
+          socket.emit('customer login succeed', doc._id, doc.firstname, doc.lastname, doc.striperedacted);
         });
       }
 
@@ -43,7 +43,7 @@ module.exports = function(server, socket, stripe) {
       };
       server.db['customers'].findOne(userdata, function (err, doc) {
         if (err == null && doc != null)
-          succeed(doc._id, doc.firstname, doc.lastname, doc.striperedacted);
+          succeed(doc);
         else fail();
       });
     });

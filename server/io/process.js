@@ -31,6 +31,7 @@ module.exports = function(server, socket, stripe) {
         console.log('login failed: ' + data.email + ' : ' + data.password);
       }
       function succeed(_id, firstname, lastname, striperedacted) {
+        console.log('_id: ' + _id);
         socket.login('customer', userdata, _id, function() {
           socket.emit('customer login succeed', _id, firstname, lastname, striperedacted);
         });
@@ -206,7 +207,7 @@ module.exports = function(server, socket, stripe) {
         socket.emit('stripe token succeed', stripeid);
         console.log('stripe token succeeded: ' + socket.user.email + ': ' + stripeid);
       }
-      console.dir(socket.user);
+
       stripe.createCustomer(
         data.token, 
         socket.user.email, 
@@ -217,18 +218,13 @@ module.exports = function(server, socket, stripe) {
             server.db['customers'].findOneAndUpdate({
               _id: socket.user._id
             }, {
-              stripeid: stripeid
-            }, function (err, r) {
-              if (err == null && r.matchedCount == 1) {
-                server.db['customers'].findOneAndUpdate({
-                  _id: socket.user._id
-                }, {
-                  striperedacted: data.redacted
-                }, function (err, r) {
-                  if (err == null && r.matchedCount == 1) succeed(stripeid);
-                  else fail('could not update user');
-                });
-              } else fail('could not update user');
+              $set: {
+                stripeid: stripeid,
+                striperedacted: data.redacted
+              }
+            }, function (err, doc) {
+              if (err == null && doc != null) succeed(stripeid);
+              else fail('could not update user');
             });
           }
         }

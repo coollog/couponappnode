@@ -120,13 +120,15 @@ module.exports = function (config) {
         if (typeof source == undefined) {
           stripe.customers.update(id, {account_balance: account_balance, description: description, email: email}, 
             function (err, customer) {
-              callback(err, customer.id);
+              if (err) callback(err, null);
+              else callback(null, customer.id);
           });
         }
         else {
           stripe.customers.update(id, {account_balance: account_balance, description: description, email: email, source: source}, 
               function (err, customer) {
-                callback(err, customer.id);
+                if (err) callback(err, null);
+                else callback(null, customer.id);
           });
         }
       }

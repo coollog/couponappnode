@@ -16,6 +16,7 @@ module.exports = function(server, socket, stripe) {
       stripeid: userdata.stripeid
     }
     socket.user = data;
+    console.dir(data);
     if (typeof emit !== 'undefined') emit();
     console.log(type + ' login: ' + data.email + ' : ' + data.password);
   }

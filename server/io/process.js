@@ -62,7 +62,7 @@ module.exports = function(server, socket, stripe) {
       function succeed(_id, userdata) {
         socket.emit('customer register succeed', _id);
         console.log('new registrant: ' + data.email + ' : ' + data.password);
-        socket.login('customer', userdata, _id);
+        socket.login('customer', userdata);
       }
 
       server.db['customers'].findOne({
@@ -165,12 +165,13 @@ module.exports = function(server, socket, stripe) {
         console.log('claim deal succeeded: ' + socket.user.email + ' - ' + data._id);
       }
 
-      server.db['deals'].find({
+      server.db['deals'].findOne({
         _id: data._id
       }, function (err, doc) {
         if (err == null && doc != null) {
           if (!doc['claimed']) {
             doc['claimed'] = socket.user._id;
+            console.dir(doc);
             server.db['deals'].save(doc, function (err, res) {
               if (err == null) {
                 server.db['customers'].findOneAndUpdate({

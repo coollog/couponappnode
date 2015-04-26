@@ -179,7 +179,7 @@ module.exports = function(server, socket, stripe) {
                   _id: socket.user._id
                 }, {
                   $push: {
-                    claimed: data._id,
+                    claimed: data._id.toString(),
                   }
                 }, function (err, doc) {
                   if (err == null && doc != null) succeed();

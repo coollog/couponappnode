@@ -214,7 +214,7 @@ module.exports = function(server, socket, stripe) {
         function (err, stripeid) {
           if (err) fail(err.message);
           else {
-            server.db['customers'].updateOne({
+            server.db['customers'].update({
               _id: socket.user._id
             }, {
               $set: {

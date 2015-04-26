@@ -261,11 +261,11 @@ module.exports = function(server, socket, stripe) {
       data = util.formJSON(data);
       function fail(err) {
         socket.emit('stripe charge fail', err);
-        console.log('stripe charge failed: ' + socket.user.email + ': $' + data.amount + ' for ' + data.description + ' b/c ' + err);
+        console.log('stripe charge failed: ' + socket.user.email + ': $' + data.amount/100.0 + ' for ' + data.description + ' b/c ' + err);
       }
       function succeed() {
         socket.emit('stripe charge succeed');
-        console.log('stripe charge succeeded: ' + socket.user.email + ': $' + data.amount + ' for ' + data.description);
+        console.log('stripe charge succeeded: ' + socket.user.email + ': $' + data.amount/100.0 + ' for ' + data.description);
       }
 
       server.db['customers'].findOne({

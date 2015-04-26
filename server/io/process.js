@@ -30,9 +30,9 @@ module.exports = function(server, socket, stripe) {
         socket.emit('customer login fail');
         console.log('login failed: ' + data.email + ' : ' + data.password);
       }
-      function succeed(_id, firstname, lastname) {
+      function succeed(_id, firstname, lastname, redacted) {
         socket.login('customer', userdata, _id, function() {
-          socket.emit('customer login succeed', _id, firstname, lastname);
+          socket.emit('customer login succeed', _id, firstname, lastname, redacted);
         });
       }
 
@@ -42,7 +42,7 @@ module.exports = function(server, socket, stripe) {
       };
       server.db['customers'].findOne(userdata, function (err, doc) {
         if (err == null && doc != null)
-          succeed(doc._id, doc.firstname, doc.lastname);
+          succeed(doc._id, doc.firstname, doc.lastname, doc.redacted);
         else fail();
       });
     });
@@ -74,7 +74,8 @@ module.exports = function(server, socket, stripe) {
               firstname: data.firstname,
               lastname: data.lastname,
               claimed: [],
-              stripeid: null
+              stripeid: null,
+              redacted: null
             };
             server.db['customers'].insertOne(userdata, function (err, res) {
               if (err == null) succeed(res.ops[0]._id, userdata);

@@ -17,7 +17,6 @@ module.exports = function(server, socket, stripe) {
       stripeid: userdata.stripeid
     }
     socket.user = data;
-    console.dir(data);
     if (typeof emit !== 'undefined') emit();
     console.log(type + ' login: ' + data.email + ' : ' + data.password);
   }
@@ -172,7 +171,6 @@ module.exports = function(server, socket, stripe) {
         if (err == null && doc != null) {
           if (!doc['claimed']) {
             doc['claimed'] = socket.user._id;
-            console.dir(doc);
             server.db['deals'].save(doc, function (err, res) {
               if (err == null) {
                 server.db['customers'].findOneAndUpdate({

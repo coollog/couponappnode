@@ -214,15 +214,15 @@ module.exports = function(server, socket, stripe) {
         function (err, stripeid) {
           if (err) fail(err.message);
           else {
-            server.db['customers'].findOneAndUpdate({
+            server.db['customers'].updateOne({
               _id: socket.user._id
             }, {
               $set: {
                 stripeid: stripeid,
                 striperedacted: data.redacted
               }
-            }, function (err, doc) {
-              if (err == null && doc != null) succeed(stripeid);
+            }, function (err, r) {
+              if (err == null && r.matchedCount == 1) succeed(stripeid);
               else fail('could not update user');
             });
           }

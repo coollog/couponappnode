@@ -165,6 +165,7 @@ module.exports = function(server, socket, stripe) {
         console.log('claim deal succeeded: ' + socket.user.email + ' - ' + data._id);
       }
 
+      console.dir(data);
       server.db['deals'].findOne({
         _id: data._id
       }, function (err, doc) {

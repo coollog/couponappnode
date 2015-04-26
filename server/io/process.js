@@ -183,7 +183,10 @@ module.exports = function(server, socket, stripe) {
                   if (err == null && doc != null) succeed();
                   else fail('could not update user');
                 });
-              } else fail('cannot claim deal');
+              } else {
+                console.log(err.message);
+                fail('cannot claim deal');
+              }
             });
           } else fail('deal already claimed');
         } else fail('nonexistent deal');

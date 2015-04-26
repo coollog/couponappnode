@@ -16,6 +16,7 @@ module.exports = function(server, socket, stripe) {
       stripeid: userdata.stripeid
     }
     socket.user = data;
+    console.dir(data);
     if (typeof emit !== 'undefined') emit();
     console.log(type + ' login: ' + data.email + ' : ' + data.password);
   }
@@ -164,25 +165,28 @@ module.exports = function(server, socket, stripe) {
         console.log('claim deal succeeded: ' + socket.user.email + ' - ' + data._id);
       }
 
-      server.db['deals'].findOneAndUpdate({
+      server.db['deals'].find({
         _id: data._id
-      }, {
-        $set: {
-          claimed: socket.user._id
-        }
       }, function (err, doc) {
         if (err == null && doc != null) {
-          server.db['customers'].findOneAndUpdate({
-            _id: socket.user._id
-          }, {
-            $push: {
-              claimed: data._id,
-            }
-          }, function (err, doc) {
-            if (err == null && doc != null) succeed();
-            else fail('could not update user');
-          });
-        } else fail('cannot claim deal');
+          if (!doc['claimed']) {
+            doc['claimed'] = socket.user._id;
+            server.db['deals'].save(doc, function (err, res) {
+              if (err == null) {
+                server.db['customers'].findOneAndUpdate({
+                  _id: socket.user._id
+                }, {
+                  $push: {
+                    claimed: data._id,
+                  }
+                }, function (err, doc) {
+                  if (err == null && doc != null) succeed();
+                  else fail('could not update user');
+                });
+              } else fail('cannot claim deal');
+            });
+          } else fail('deal already claimed');
+        } else fail('nonexistent deal');
       });
     });
 

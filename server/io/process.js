@@ -214,16 +214,21 @@ module.exports = function(server, socket, stripe) {
         function (err, stripeid) {
           if (err) fail(err.message);
           else {
-            server.db['customers'].update({
+            server.db['customers'].findOneAndUpdate({
               _id: socket.user._id
             }, {
-              $set: {
-                stripeid: stripeid,
-                striperedacted: data.redacted
-              }
+              stripeid: stripeid
             }, function (err, r) {
-              if (err == null && r.matchedCount == 1) succeed(stripeid);
-              else fail('could not update user');
+              if (err == null && r.matchedCount == 1) {
+                server.db['customers'].findOneAndUpdate({
+                  _id: socket.user._id
+                }, {
+                  striperedacted: data.redacted
+                }, function (err, r) {
+                  if (err == null && r.matchedCount == 1) succeed(stripeid);
+                  else fail('could not update user');
+                });
+              } else fail('could not update user');
             });
           }
         }

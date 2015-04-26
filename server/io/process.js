@@ -191,7 +191,10 @@ module.exports = function(server, socket, stripe) {
               }
             });
           } else fail('deal already claimed');
-        } else fail('nonexistent deal');
+        } else {
+          console.log(err.message);
+          fail('nonexistent deal');
+        }
       });
     });
 

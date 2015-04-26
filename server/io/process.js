@@ -12,7 +12,8 @@ module.exports = function(server, socket, stripe) {
       email: userdata.email,
       password: userdata.password,
       firstname: userdata.firstname,
-      lastname: userdata.lastname
+      lastname: userdata.lastname,
+      stripeid: userdata.stripeid
     }
     socket.user = data;
     if (typeof emit !== 'undefined') emit();
@@ -31,7 +32,7 @@ module.exports = function(server, socket, stripe) {
         console.log('login failed: ' + data.email + ' : ' + data.password);
       }
       function succeed(_id, firstname, lastname, striperedacted) {
-        socket.login('customer', userdata, _id, function() {
+        socket.login('customer', doc, _id, function() {
           socket.emit('customer login succeed', _id, firstname, lastname, striperedacted);
         });
       }
@@ -207,27 +208,38 @@ module.exports = function(server, socket, stripe) {
         console.log('stripe token succeeded: ' + socket.user.email + ': ' + stripeid);
       }
 
-      stripe.createCustomer(
-        data.token, 
-        socket.user.email, 
-        [socket.user.firstname, socket.user.lastname].join(' '),
-        function (err, stripeid) {
-          if (err) fail(err.message);
-          else {
-            server.db['customers'].findOneAndUpdate({
-              _id: socket.user._id
-            }, {
-              $set: {
-                stripeid: stripeid,
-                striperedacted: data.redacted
-              }
-            }, function (err, doc) {
-              if (err == null && doc != null) succeed(stripeid);
-              else fail('could not update user');
-            });
-          }
+      function update(err, stripeid) {
+        if (err) fail(err.message);
+        else {
+          server.db['customers'].findOneAndUpdate({
+            _id: socket.user._id
+          }, {
+            $set: {
+              stripeid: stripeid,
+              striperedacted: data.redacted
+            }
+          }, function (err, doc) {
+            if (err == null && doc != null) succeed(stripeid);
+            else fail('could not update user');
+          });
         }
-      )
+      }
+      if (socket.user.stripeid == null) {
+        // create customer if not exist
+        stripe.createCustomer(
+          data.token, 
+          socket.user.email, 
+          [socket.user.firstname, socket.user.lastname].join(' '),
+          update
+        );
+      } else {
+        // update customer
+        stripe.updateCustomer(
+          socket.user.stripeid, -1, 'none', 'none',
+          data.token, 
+          update
+        );
+      }
     });
 
     socket.on('stripe charge', function (data) {

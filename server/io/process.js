@@ -3,7 +3,7 @@
 
 module.exports = function(server, socket, stripe) {
   var util = require('../util'),
-    ObjectID = require('mongodb').ObjectID;
+      ObjectID = require('mongodb').ObjectID;
 
   // Helper functions
   socket.login = function (type, userdata, emit) {
@@ -167,8 +167,9 @@ module.exports = function(server, socket, stripe) {
       }
 
       console.dir(data);
+      console.dir(new ObjectID(data._id));
       server.db['deals'].findOne({
-        _id: new ObjectId(data._id)
+        _id: new ObjectID(data._id)
       }, function (err, doc) {
         if (err == null && doc != null) {
           if (!doc['claimed']) {

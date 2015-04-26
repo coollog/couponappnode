@@ -217,8 +217,10 @@ module.exports = function(server, socket, stripe) {
             server.db['customers'].findOneAndUpdate({
               _id: socket.user._id
             }, {
-              stripeid: stripeid,
-              striperedacted: data.redacted
+              $set: {
+                stripeid: stripeid,
+                striperedacted: data.redacted
+              }
             }, function (err, doc) {
               if (err == null && doc != null) succeed(stripeid);
               else fail('could not update user');

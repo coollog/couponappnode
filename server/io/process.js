@@ -8,7 +8,7 @@ module.exports = function(server, socket, stripe) {
   socket.login = function (type, userdata, _id, emit) {
     var data = {
       type: type,
-      _id: userdata._id,
+      _id: _id,
       email: userdata.email,
       password: userdata.password,
       firstname: userdata.firstname,
@@ -31,7 +31,6 @@ module.exports = function(server, socket, stripe) {
         console.log('login failed: ' + data.email + ' : ' + data.password);
       }
       function succeed(_id, firstname, lastname, striperedacted) {
-        console.log('_id: ' + _id);
         socket.login('customer', userdata, _id, function() {
           socket.emit('customer login succeed', _id, firstname, lastname, striperedacted);
         });

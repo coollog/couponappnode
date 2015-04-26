@@ -167,7 +167,7 @@ module.exports = function(server, socket, stripe) {
 
       console.dir(data);
       server.db['deals'].findOne({
-        _id: data._id
+        _id: server.db['deals'].ObjectId(data._id)
       }, function (err, doc) {
         if (err == null && doc != null) {
           if (!doc['claimed']) {
@@ -191,10 +191,7 @@ module.exports = function(server, socket, stripe) {
               }
             });
           } else fail('deal already claimed');
-        } else {
-          console.log(err.message);
-          fail('nonexistent deal');
-        }
+        } else fail('nonexistent deal');
       });
     });
 

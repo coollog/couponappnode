@@ -30,9 +30,9 @@ module.exports = function(server, socket, stripe) {
         socket.emit('customer login fail');
         console.log('login failed: ' + data.email + ' : ' + data.password);
       }
-      function succeed(_id, firstname, lastname, redacted) {
+      function succeed(_id, firstname, lastname, striperedacted) {
         socket.login('customer', userdata, _id, function() {
-          socket.emit('customer login succeed', _id, firstname, lastname, redacted);
+          socket.emit('customer login succeed', _id, firstname, lastname, striperedacted);
         });
       }
 

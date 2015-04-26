@@ -2,7 +2,8 @@
 // (though can partition into multiple files)
 
 module.exports = function(server, socket, stripe) {
-  var util = require('../util');
+  var util = require('../util'),
+    ObjectID = require('mongodb').ObjectID;
 
   // Helper functions
   socket.login = function (type, userdata, emit) {
@@ -167,7 +168,7 @@ module.exports = function(server, socket, stripe) {
 
       console.dir(data);
       server.db['deals'].findOne({
-        _id: server.db['deals'].ObjectId(data._id)
+        _id: new ObjectId(data._id)
       }, function (err, doc) {
         if (err == null && doc != null) {
           if (!doc['claimed']) {

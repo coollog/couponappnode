@@ -165,18 +165,26 @@ module.exports = function(server, socket, stripe) {
         console.log('claim deal succeeded: ' + socket.user.email + ' - ' + data._id);
       }
 
-      server.db['deals'].find({
+      console.log('_id: ' + data._id);
+      server.db['deals'].findOneAndUpdate({
         _id: data._id
+      }, {
+        $set: {
+          claimed: socket.user._id
+        }
       }, function (err, doc) {
         if (err == null) {
-          doc['claimed'] = socket.user._id;
-          server.db['deals'].save(doc, function (err, res) {
-            if (err == null) {
-              // DO PAYMENT PROCESSING AND SHIT
-              succeed();
-            } else fail('cannot claim deal');
+          server.db['customers'].findOneAndUpdate({
+            _id: socket.user._id
+          }, {
+            $push: {
+              claimed: data._id,
+            }
+          }, function (err, doc) {
+            if (err == null && doc != null) succeed();
+            else fail('could not update user');
           });
-        } else fail('nonexistent deal');
+        } else fail('cannot claim deal');
       });
     });
 

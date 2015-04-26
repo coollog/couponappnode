@@ -11,6 +11,10 @@ module.exports = function (config) {
   //var stripeToken = req.body.stripeToken; will need to place token gotten from Stripe.js here!!
   //var amount = 1000;
 
+  this.cleanToken = function(cardsource) {
+    return cardsource.split(' ')[0];
+  }
+
 
   // source is the token sent from the frontend for the customer
   // description is a string with the customer's name
@@ -37,7 +41,7 @@ module.exports = function (config) {
         person = customer.id;
 
         // add a card to this customer
-        stripe.customers.createSource(person, {source: cardsource.split(' ')[0]}, function (err, card) {
+        stripe.customers.createSource(person, {source: this.cleanToken(cardsource)}, function (err, card) {
           if (err) 
             callback(err, null);
           else {
@@ -125,7 +129,7 @@ module.exports = function (config) {
           });
         }
         else {
-          stripe.customers.update(id, {account_balance: account_balance, description: description, email: email, source: source}, 
+          stripe.customers.update(id, {account_balance: account_balance, description: description, email: email, source: this.cleanToken(source)}, 
               function (err, customer) {
                 if (err) callback(err, null);
                 else callback(null, customer.id);

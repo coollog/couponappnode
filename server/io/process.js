@@ -206,7 +206,7 @@ module.exports = function(server, socket, stripe) {
         socket.emit('stripe token succeed', stripeid);
         console.log('stripe token succeeded: ' + socket.user.email + ': ' + stripeid);
       }
-
+      console.dir(socket.user);
       stripe.createCustomer(
         data.token, 
         socket.user.email, 

@@ -34,26 +34,38 @@ function clearDB (callback) {
         }
             
         // server.db = db;
-        var numColl = config.collections.length
-        config.collections.forEach(function (collectionName) {
-            if ()
-            db.dropCollection(collectionName, function (err) {
-                numColl--;
-                if (err) {
-                    console.log('dropping DB error: ', err)
-                    /* if (typeof collectionName == String)
-                        console.log(collectionName)
-                    else 
-                        console.log(typeof collectionName) */
-                } else {
-                    db.createCollection(collectionName);
-                    console.log('created ', collectionName)
-                }
-                if (numColl == 0) {
-                    console.log('mongodb cleared');
-                    callback();
-                }
-            });
+        // var numColl = db.collectionNames().length
+        db.collections(function (err, collNames) {
+            if (err)
+                console.log('collectionNames error: ', err)
+            else {
+                var numColl = collNames.length - 1;
+                collNames.forEach(function (collectionName, index) {
+                    collectionName.drop()
+                    // console.log('dropped?')
+                    /* db.collection(collectionName, function (err, name) {
+                        if (err)
+                            console.log(err)
+                        else 
+                            console.log(name)
+                    }) */
+                    // numColl--;
+                    /* if (err) {
+                        console.log('dropping DB error: ', err)
+                        /* if (typeof collectionName == String)
+                            console.log(collectionName)
+                        else 
+                            console.log(typeof collectionName) */
+                    /*} else {
+                        db.createCollection(collectionName);
+                        console.log('created ', collectionName)
+                    } */
+                    if (index == numColl) {
+                        console.log('mongodb cleared');
+                        callback();
+                    } 
+                });
+            }
             
             // server.db[name] = db.collection(name);
         });

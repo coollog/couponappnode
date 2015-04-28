@@ -190,6 +190,35 @@ module.exports = function(server, socket, stripe) {
       });
     });
 
+    socket.on('use deal', function (data) {
+      if (!socket.loggedIn('customer')) return;
+      
+      data = util.formJSON(data);
+      function fail(err) {
+        socket.emit('use deal fail', err);
+        console.log('use deal failed: ' + socket.user.email + ' - ' + data._id);
+      }
+      function succeed() {
+        socket.emit('use deal succeed');
+        console.log('use deal succeeded: ' + socket.user.email + ' - ' + data._id);
+      }
+
+      server.db['deals'].findOne({
+        _id: new ObjectID(data._id)
+      }, function (err, doc) {
+        if (err == null && doc != null) {
+          if (!doc['used']) {
+            doc['used'] = socket.user._id;
+            server.db['deals'].save(doc, function (err, res) {
+              if (err == null) {
+                succeed();
+              } else fail('cannot use deal');
+            });
+          } else fail('deal already used');
+        } else fail('nonexistent deal');
+      });
+    });
+
     socket.on('customer deals', function (data) {
       if (!socket.loggedIn('customer')) return;
       

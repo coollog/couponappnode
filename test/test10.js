@@ -1,17 +1,11 @@
 module.exports = function (socket, db, callback, fail, pass) {
-  // Test 9 - business Update pass //
+  // Test 9 - Business Update pass //
 
   var response = 0;
-  var message = {
-    email: "tniels@business.com",
-    password: "test",
-    firstname: "Torie",
-    lastname: "Oranges"
-  };
-  socket.emit('business register', message);
+  var testhelpers = require('./testhelpers.js')(socket, db);
 
   // update after business registered and logged in
-  socket.on('business register succeed', function() {
+  testhelpers.businessLogin(function() {
 
     if (!response) {
 

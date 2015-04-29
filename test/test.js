@@ -19,8 +19,7 @@ socket.on('connect_error', function(error) {
 socket.on('connect', function() {
   console.log('Connected to ' + url);
 
-  // make this into for-loop
-  var numTests = 7, testArray = [];
+  var numTests = 11, testArray = [];
   for (var i = 1; i <= numTests; i ++) {
     testArray.push(require('./test' + i + '.js'));
   }

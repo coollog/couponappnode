@@ -409,7 +409,7 @@ module.exports = function(server, socket, stripe) {
 
       server.db['businesses'].findOneAndUpdate({
         _id: socket.user._id
-      }, data, function (err, r) {
+      }, data, function (err, doc) {
         if (err == null && doc != null) succeed();
         else fail();
       });
@@ -468,6 +468,7 @@ module.exports = function(server, socket, stripe) {
       });
     });
 
+    // ADD DEAL
     socket.on('put deal', function (data) {
       if (!socket.loggedIn('business')) return;
 
@@ -497,6 +498,7 @@ module.exports = function(server, socket, stripe) {
       }
     });
 
+    // BUSINESS DEALS
     socket.on('business deals', function (data) {
       if (!socket.loggedIn('business')) return;
 

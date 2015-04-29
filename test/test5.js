@@ -2,22 +2,15 @@ module.exports = function (socket, db, callback, fail, pass) {
   // Test 5 - Customer Update pass //
 
   var response = 0;
-  var message = {
-    email: "jchirik@gmail.com",
-    password: "test",
-    firstname: "John",
-    lastname: "Apples"
-  };
-  socket.emit('customer register', message);
+  var testhelpers = require('./testhelpers.js')(socket, db);
 
   // update after customer registered and logged in
-  socket.on('customer register succeed', function() {
+  testhelpers.customerLogin(function() {
 
     if (!response) {
 
       var userdata = {
         email: 'jchirik@hotmail.com',
-        password: 'testy',
         firstname: 'Joohn',
         lastname: 'data.lastname'
       };
@@ -38,20 +31,16 @@ module.exports = function (socket, db, callback, fail, pass) {
           // check database
           db.collection('customers').findOne(userdata, function (err, doc) {
             if (err == null && doc != null) {
-              // FIND KEYS AND DO THINGS TO CHECK THAT THEY ARE SAME AS THE MESSAGE!!!!
-              //   not done with this test yet!!KOW)ER)($#(*))
-              // ALSO FIND OUT WHAT MAKES DOC NULL?!?!?! (NO PASSWORD DOES FOR SURE)
-              // console.log(doc)
-              // doesn't seem to keep the claimed[], stripeid, etc !!!
-              pass('existing customer update', callback);
+              if (doc.password == 'test')
+                pass('existing customer update', callback)
+              else
+                fail('customer was not successfully updated', callback);
             } else {
-              // console.log(err + ' and doc: ' + doc)
               fail(err, callback);
             }
           });
         }
       });
-        // check database
     }
   });
 }

@@ -17,7 +17,7 @@ socket.on('connect', function() {
   console.log('Connected to ' + url);
 
   // make this into for-loop
-  var numTests = 5, testArray = [];
+  var numTests = 6, testArray = [];
   for (var i = 1; i <= numTests; i ++) {
     testArray.push(require('./test' + i + '.js'));
   }
@@ -30,7 +30,7 @@ socket.on('connect', function() {
     if (testsCompleted <= testArray.length) {
       clearDB(function (db) {
         console.log('Starting test ' + testsCompleted);
-        testArray[testsCompleted - 1](socket, db, callback);
+        testArray[testsCompleted - 1](socket, db, nextTest);
       });
     }
     else console.log('All tests (' + (testsCompleted - 1) + ') completed');

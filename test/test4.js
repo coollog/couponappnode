@@ -1,5 +1,5 @@
 module.exports = function (socket, db, callback, fail, pass) {
-  // Test 4 - Customer Register fail //
+  // Test 4 - Customer Login fail //
 
   var response = 0;
   var message = {

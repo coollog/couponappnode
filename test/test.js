@@ -25,54 +25,9 @@ var io = require('socket.io-client'),
     socket = io.connect(url, { reconnection: false }),
     async = require('async')
     MongoClient = require('mongodb').MongoClient;
+    //mydb = 0;
 
-function clearDB (callback) {
-    MongoClient.connect(config.mongouri, function (err, db) {
-        if (err != null) {
-            console.dir(err);
-            process.exit();
-        }
-            
-        // server.db = db;
-        // var numColl = db.collectionNames().length
-        db.collections(function (err, collNames) {
-            if (err)
-                console.log('collectionNames error: ', err)
-            else {
-                var numColl = collNames.length - 1;
-                collNames.forEach(function (collectionName, index) {
-                    collectionName.drop()
-                    // console.log('dropped?')
-                    /* db.collection(collectionName, function (err, name) {
-                        if (err)
-                            console.log(err)
-                        else 
-                            console.log(name)
-                    }) */
-                    // numColl--;
-                    /* if (err) {
-                        console.log('dropping DB error: ', err)
-                        /* if (typeof collectionName == String)
-                            console.log(collectionName)
-                        else 
-                            console.log(typeof collectionName) */
-                    /*} else {
-                        db.createCollection(collectionName);
-                        console.log('created ', collectionName)
-                    } */
-                    if (index == numColl) {
-                        console.log('mongodb cleared');
-                        callback();
-                    } 
-                });
-            }
-            
-            // server.db[name] = db.collection(name);
-        });
-            
-        
-    });
-}
+
 
 socket.on('connect_error', function(error){ console.log('Error connecting to ' + url, error);});
 socket.on('connect', function() {
@@ -83,25 +38,64 @@ socket.on('connect', function() {
     // make this into for-loop
     var test1 = require('./test1.js')
     var test2 = require('./test2.js')
-    var testArray = [test1, test2, test2]
+    var test3 = require('./test3.js')
+    var test4 = require('./test4.js')
+    var test5 = require('./test5.js')
+    var testArray = [test1, test2, test3, test4, test5]
 
     var testsCompleted = 0;
 
     function callback () {
 
         testsCompleted++;
-        // console.log('At callback')
-        if (testsCompleted < testArray.length)
-            testArray[testsCompleted](socket, callback);
+        
+        if (testsCompleted <= testArray.length) {
+            clearDB(function (db) {
+                console.log('Starting test ' + (testsCompleted))
+                testArray[testsCompleted - 1](socket, db, callback);
+            })
+        }
         else 
-            console.log('All tests (' + testsCompleted + ') completed')
+            console.log('All tests (' + (testsCompleted - 1) + ') completed')
     }
 
-    clearDB(function() {
-        testArray[0](socket, callback);
-    });
-    
+    function clearDB (callback) {
+        MongoClient.connect(config.mongouri, function (err, db) {
+            if (err != null) {
+                console.dir(err);
+                process.exit();
+            }
+                
+            //mydb = db;
+            // server.db = db;
+            // var numColl = db.collectionNames().length
+            db.collections(function (err, collNames) {
+                if (err)
+                    console.log('collectionNames error: ', err)
+                else {
+                    var numColl = collNames.length - 1;
+                    collNames.forEach(function (collectionName, index) {
+                        collectionName.drop()
+                        if (index == numColl) {
+                            console.log('mongodb cleared');
+                            callback(db);
+                        } 
+                    });
+                }
+                
+                // server.db[name] = db.collection(name);
+            });
+                
+            
+        });
+    }
 
+    callback();
+    /* clearDB(function (db) {
+        console.log('Starting test 1')
+        testArray[0](socket, db, callback);
+    }); */
+    
     // TRYING ASYNC HERE!!!
     /* async.eachSeries(testArray, function(currTest, callback) {
         currTest(socket, callback)

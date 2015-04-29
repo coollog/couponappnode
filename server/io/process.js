@@ -105,7 +105,7 @@ module.exports = function(server, socket, stripe) {
 
       server.db['customers'].findOneAndUpdate({
         _id: socket.user._id
-      }, data, function (err, r) {
+      }, data, function (err, doc) {
         if (err == null && doc != null) succeed();
         else fail();
       });
@@ -148,10 +148,12 @@ module.exports = function(server, socket, stripe) {
       });
     });
 
+    // SEARCH DEAL
     socket.on('search deals', function (data) {
       
     });
 
+    // CLAIM DEAL
     socket.on('claim deal', function (data) {
       if (!socket.loggedIn('customer')) return;
       
@@ -190,6 +192,7 @@ module.exports = function(server, socket, stripe) {
       });
     });
 
+    // USE DEAL
     socket.on('use deal', function (data) {
       if (!socket.loggedIn('customer')) return;
       
@@ -219,6 +222,7 @@ module.exports = function(server, socket, stripe) {
       });
     });
 
+    // CLAIMED DEALS 
     socket.on('customer deals', function (data) {
       if (!socket.loggedIn('customer')) return;
       
@@ -235,6 +239,7 @@ module.exports = function(server, socket, stripe) {
       });
     });
 
+    // ADD/EDIT PAYMENT INFO
     socket.on('stripe token', function (data) {
       if (!socket.loggedIn('customer')) return;
 
@@ -282,6 +287,7 @@ module.exports = function(server, socket, stripe) {
       }
     });
 
+    // CHARGE CUSTOMER
     socket.on('stripe charge', function (data) {
       if (!socket.loggedIn('customer')) return;
 

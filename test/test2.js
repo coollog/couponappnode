@@ -1,34 +1,31 @@
-module.exports = function (socket, callback) {
-    // Test 2 //
+module.exports = function (socket, db, callback) {
+    // Test 2 -- Customer Register fail //
 
-    console.log('Starting test 2')
     var response = 0
-    var message = { "email": "jchirik@hello.com", "password": "test", "firstname": "John", "lastname": "Apples" };
-    // var msg = JSON.parse(message)
+    var message = { "email": "jchirik@gmail.com", "password": "test", "firstname": "John", "lastname": "Apples" };
     socket.emit('customer register', message);
-    socket.on('customer register fail', function(err) {
-        if (!response) {
-            response = 1
-        	if (err == 'email already taken') {
-        		console.log('Test 2 passed ..... attempted customer register (email already taken)')
-                callback()
-                return this
-        	} else {
-        		console.log('Test 2 failed: ', err)
+
+    // try after email has already been created
+    socket.on('customer register succeed', function() {
+        socket.emit('customer register', message);
+        socket.on('customer register fail', function(err) {
+            if (!response) {
+                response = 1
+                // check db here?
+                console.log('Test 2 passed ..... attempted customer register (email already taken)')
                 callback()
                 return this
             }
-        }
+        })
+        socket.on('customer register succeed', function() {
+            if (!response) {
+                response = 1
+                console.log('Test 2 failed: should not have succeeded')
+                callback()
+                return this
+            }
+        }) 
     })
-    socket.on('customer register succeed', function() {
-        if (!response) {
-            response = 1
-        	console.log('Test 2 failed: should not have succeeded')
-            callback()
-            return this
-        }
-    }) 
-    // return this
 
     // End Test 2 //
 }

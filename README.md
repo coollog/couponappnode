@@ -4,7 +4,7 @@
 
 Install the necessary packages:
 
-`npm install --save express mongodb jade socket.io mocha stripe`
+`npm install --save express mongodb jade socket.io colors stripe`
 
 
 Make sure to have a `config.js` with the following (set your own values in <>):

@@ -17,10 +17,10 @@ module.exports = function (socket, db, callback, fail, pass) {
       socket.emit('customer edit', userdata);
 
       // if edit is unsuccessful
-      socket.on('customer edit fail', function (err) {
+      socket.on('customer edit fail', function () {
         if (!response) {
           response = 1;
-          fail(err, callback);
+          fail('customer edit fail', callback);
         }
       });
 

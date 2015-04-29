@@ -1,9 +1,10 @@
 module.exports = function (socket, db, callback) {
-    // Test 6 - Add deal pass //
+    // Test 6 - Add card pass //
 
     var stripe = require('stripe')(config.stripekey);
     var response = 0
     var message = { email: "jchirik@gmail.com", password: "test", lastname: "Apples" };
+
     socket.emit('customer register', message);
 
     // update after customer registered and logged in
@@ -20,7 +21,13 @@ module.exports = function (socket, db, callback) {
         // if register+login succeeded
         socket.on('customer register succeed', function() {
             if (!response) {
-                socket.emit('stripe token', {email: 'jchirik@gmail.com', password: 'test', firstname: 'John', lastname: 'Apples'})
+                var token = stripe.card.createToken({
+                    number: 4242424242424242,
+                    cvc: 123,
+                    exp_month: 12,
+                    exp_year: 18,
+                }, )
+                socket.emit('stripe token', )
                 // if edit is unsuccessful
                 socket.on('stripe token fail', function(err) {
                     if (!response) {
@@ -40,7 +47,6 @@ module.exports = function (socket, db, callback) {
                                 // FIND KEYS AND DO THINGS TO CHECK THAT THEY ARE SAME AS THE MESSAGE!!!!
                                 //   not done with this test yet!!KOW)ER)($#(*))
                                 // ALSO FIND OUT WHAT MAKES DOC NULL?!?!?! (NO PASSWORD DOES FOR SURE)
-                                // console.log(doc)
                                 console.log('Test 6 passed ..... existing customer update')
                                 callback()
                             } else {

@@ -22,13 +22,14 @@ socket.on('connect', function() {
     testArray.push(require('./test' + i + '.js'));
   }
 
-  var testsCompleted = 0;
+  var testsCompleted = 0, testsPassed;
 
   function fail(err, callback) {
     console.log('Test ' + testsCompleted + ' failed: ', err);
     callback();
   }
   function pass(msg, callback) {
+    testsPassed ++;
     console.log('Test ' + testsCompleted + ' passed...... ', msg);
     callback();
   }
@@ -42,7 +43,10 @@ socket.on('connect', function() {
         testArray[testsCompleted - 1](socket, db, callback);
       });
     }
-    else console.log('All tests (' + (testsCompleted - 1) + ') completed');
+    else {
+      testsComplete --;
+      console.log('All tests completed, '+testsPassed+'/'+testsCompleted+' passed.');
+    }
   }
 
   function clearDB (callback) {

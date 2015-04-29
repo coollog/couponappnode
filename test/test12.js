@@ -7,7 +7,6 @@ module.exports = function (socket, db, callback, fail, pass) {
   // register and login business, then create some deals
   testhelpers.businessLogin(function () {
     // add two deals
-    //testhelpers.createDeal(function () {
       testhelpers.createDeal(function () {
         socket.emit('business deals');
         socket.on('business deals', function() {
@@ -17,7 +16,8 @@ module.exports = function (socket, db, callback, fail, pass) {
               if (err)
                 fail('business view deals fails', callback);
               else
-                if (count == 2)
+                console.log(count);
+                if (count == 1)
                   pass('business view deals', callback);
                 else 
                   fail('business view deals has wrong #', callback);

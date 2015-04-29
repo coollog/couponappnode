@@ -20,7 +20,7 @@ module.exports = function(server, socket, stripe) {
     } else if (type == 'business') {
       var data = {
         type: type,
-        _id: userdata._id
+        _id: userdata._id,
         email: userdata.email,
         password: userdata.password,
         firstname: userdata.firstname,

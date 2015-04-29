@@ -105,7 +105,9 @@ module.exports = function(server, socket, stripe) {
 
       server.db['customers'].findOneAndUpdate({
         _id: socket.user._id
-      }, data, function (err, r) {
+      }, {
+        $set: data
+      }, function (err, r) {
         if (err == null && doc != null) succeed();
         else fail();
       });

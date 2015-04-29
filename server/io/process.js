@@ -7,14 +7,27 @@ module.exports = function(server, socket, stripe) {
 
   // Helper functions
   socket.login = function (type, userdata, emit) {
-    var data = {
-      type: type,
-      _id: userdata._id,
-      email: userdata.email,
-      password: userdata.password,
-      firstname: userdata.firstname,
-      lastname: userdata.lastname,
-      stripeid: userdata.stripeid
+    if (type == 'customer') {
+      var data = {
+        type: type,
+        _id: userdata._id,
+        email: userdata.email,
+        password: userdata.password,
+        firstname: userdata.firstname,
+        lastname: userdata.lastname,
+        stripeid: userdata.stripeid
+      }
+    } else if (type == 'business') {
+      var data = {
+        type: type,
+        _id: userdata._id
+        email: userdata.email,
+        password: userdata.password,
+        firstname: userdata.firstname,
+        lastname: userdata.lastname,
+        company: userdata.company,
+        phone: userdata.phone
+      };
     }
     socket.user = data;
     if (typeof emit !== 'undefined') emit();
@@ -331,9 +344,9 @@ module.exports = function(server, socket, stripe) {
         socket.emit('business login fail');
         console.log('login failed: ' + data.email + ' : ' + data.password);
       }
-      function succeed(_id) {
-        socket.login('business', userdata, _id, function() {
-          socket.emit('business login succeed', _id);
+      function succeed(userdata) {
+        socket.login('business', userdata, function() {
+          socket.emit('business login succeed', userdata._id);
         });
       }
 
@@ -343,7 +356,7 @@ module.exports = function(server, socket, stripe) {
       };
       server.db['businesses'].findOne(userdata, function (err, doc) {
         if (err == null && doc != null)
-          succeed(doc._id);
+          succeed(doc);
         else fail();
       });
     });
@@ -355,10 +368,10 @@ module.exports = function(server, socket, stripe) {
         socket.emit('business register fail', err);
         console.log('existing registrant: ' + data.email + ' : ' + data.password);
       }
-      function succeed(_id, userdata) {
-        socket.emit('business register succeed', _id);
+      function succeed(userdata) {
+        socket.emit('business register succeed', userdata._id);
         console.log('new registrant: ' + data.email + ' : ' + data.password);
-        socket.login('business', userdata, _id);
+        socket.login('business', userdata);
       }
 
       server.db['businesses'].findOne({
@@ -374,7 +387,7 @@ module.exports = function(server, socket, stripe) {
             phone: data.phone
           };
           server.db['businesses'].insertOne(userdata, function (err, res) {
-            if (err == null) succeed(res.ops[0]._id, userdata);
+            if (err == null) succeed(res.ops[0]);
             else fail('could not make user');
           });
         } else fail('email already taken');

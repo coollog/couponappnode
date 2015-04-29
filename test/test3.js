@@ -15,8 +15,7 @@ module.exports = function (socket, db, callback) {
     socket.on('customer login fail', function (err) {
       if (!response) {
         response = 1;
-        console.log('Test 3 failed: ', err);
-        callback();
+        fail(err, callback);
       }
     });
 
@@ -26,11 +25,9 @@ module.exports = function (socket, db, callback) {
         // check database for customer information
         db.collection('customers').findOne(message, function (err, doc) {
           if (err == null && doc != null) {
-            console.log('Test 3 passed ..... existing customer login');
-            callback();
+            succeed('existing customer login', callback);
           } else {
-            console.log('Test 3 failed: ', err);
-            callback();
+            fail(err, callback);
           }
         });
       }

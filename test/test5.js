@@ -17,8 +17,7 @@ module.exports = function (socket, db, callback) {
     socket.on('customer login fail', function (err) {
       if (!response) {
         response = 1;
-        console.log('Test 5 failed: ', err);
-        callback();
+        fail(err, callback);
       }
     });
 
@@ -37,8 +36,7 @@ module.exports = function (socket, db, callback) {
         socket.on('customer edit fail', function (err) {
           if (!response) {
             response = 1;
-            console.log('Test 5 failed: ', err);
-            callback();
+            fail(err, callback);
           }
         });
 
@@ -54,12 +52,10 @@ module.exports = function (socket, db, callback) {
                 // ALSO FIND OUT WHAT MAKES DOC NULL?!?!?! (NO PASSWORD DOES FOR SURE)
                 // console.log(doc)
                 // doesn't seem to keep the claimed[], stripeid, etc !!!
-                console.log('Test 5 passed ..... existing customer update');
-                callback();
+                succeed('existing customer update', callback);
               } else {
                 // console.log(err + ' and doc: ' + doc)
-                console.log('Test 5 failed: ', err);
-                callback();
+                fail(err, callback);
               }
             });
           }

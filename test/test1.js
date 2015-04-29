@@ -13,8 +13,7 @@ module.exports = function (socket, db, callback) {
   socket.on('customer register fail', function (err) {
   	if (!response) {
   		response = 1;
-      console.log('Test 1 failed: ', err);
-      callback();
+      fail(err, callback);
     }
   });
 
@@ -24,11 +23,9 @@ module.exports = function (socket, db, callback) {
     	// check database for customer info
     	db.collection('customers').findOne(message, function (err, doc) {
     		if (err == null && doc != null) {
-    			console.log('Test 1 passed ..... new customer register');
-    			callback();
+    			succeed('new customer register', callback);
     		} else {
-    			console.log('Test 1 failed: ', err);
-    			callback();
+    			fail(err, callback);
     		}
     	});
     }

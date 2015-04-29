@@ -16,16 +16,13 @@ module.exports = function (socket, db, callback) {
     socket.on('customer register fail', function (err) {
       if (!response) {
         response = 1;
-        // check db here?
-        console.log('Test 2 passed ..... attempted customer register (email already taken)');
-        callback();
+        succeed('attempted customer register (email already taken)', callback);
       }
     })
     socket.on('customer register succeed', function() {
       if (!response) {
         response = 1;
-        console.log('Test 2 failed: should not have succeeded');
-        callback();
+        fail('should not have succeeded', callback);
       }
     });
   });

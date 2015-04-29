@@ -24,6 +24,11 @@ socket.on('connect', function() {
 
   var testsCompleted = 0;
 
+  function fail(err, callback) {
+    console.log('Test ' + testsCompleted + ' failed: ', err);
+    callback();
+  }
+
   function nextTest() {
     testsCompleted ++;
     

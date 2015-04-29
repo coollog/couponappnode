@@ -515,6 +515,7 @@ module.exports = function(server, socket, stripe) {
       });
     });
 
+    // DISCONNECT
     socket.on('disconnect', function () {
       console.log('user disconnected: ' + socket.id);
     });

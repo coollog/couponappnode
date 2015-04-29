@@ -24,5 +24,17 @@ module.exports = function (socket, db) {
     socket.on('business register succeed', callback);
   };
 
+  this.createDeal = function (callback) {
+    var dealdata = {
+      title: 'French Fries + Veggie Burger',
+      startPrice: '$15',
+      endPrice: '$8',
+      startTime: '15:00',
+      endTime: '17:00'
+    }
+    socket.emit('put deal', dealdata);
+    socket.on('put deal succeed', callback);
+  }
+
   return this;
 }; 

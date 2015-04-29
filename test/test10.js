@@ -1,5 +1,5 @@
 module.exports = function (socket, db, callback, fail, pass) {
-  // Test 9 - Business Update pass //
+  // Test 10 - Business Update pass //
 
   var response = 0;
   var testhelpers = require('./testhelpers.js')(socket, db);
@@ -11,7 +11,6 @@ module.exports = function (socket, db, callback, fail, pass) {
 
       var userdata = {
         email: 'tniels@hotmail.com',
-        password: 'testy',
         firstname: 'Toorie',
         lastname: 'data.lastname'
       };
@@ -32,14 +31,11 @@ module.exports = function (socket, db, callback, fail, pass) {
           // check database
           db.collection('businesses').findOne(userdata, function (err, doc) {
             if (err == null && doc != null) {
-              // FIND KEYS AND DO THINGS TO CHECK THAT THEY ARE SAME AS THE MESSAGE!!!!
-              //   not done with this test yet!!KOW)ER)($#(*))
-              // ALSO FIND OUT WHAT MAKES DOC NULL?!?!?! (NO PASSWORD DOES FOR SURE)
-              // console.log(doc)
-              // doesn't seem to keep the claimed[], stripeid, etc !!!
-              pass('existing business update', callback);
+              if (doc.password == 'test')
+                pass('existing business update', callback)
+              else
+                fail('business was not successfully updated', callback);
             } else {
-              // console.log(err + ' and doc: ' + doc)
               fail(err, callback);
             }
           });

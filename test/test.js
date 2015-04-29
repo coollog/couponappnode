@@ -3,7 +3,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 var config = require('../config.js');
 config.mongouri = config.mongouritest;
 
-var url = 'http://localhost:8080';
+var socketserver = require('../server/socket')(config);
+var url = 'http://localhost:' + config.ioport;
 console.log('Connecting to ' + url);
 
 var io = require('socket.io-client'),

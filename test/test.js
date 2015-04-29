@@ -8,7 +8,7 @@ var url = 'http://localhost:' + config.ioport;
 console.log('Connecting to ' + url);
 
 var io = require('socket.io-client'),
-    socket = io.connect(url, { reconnection: false }),
+    socket = io.connect(url),
     MongoClient = require('mongodb').MongoClient,
     colors = require('colors');
 
@@ -25,7 +25,7 @@ socket.on('connect', function() {
     testArray.push(require('./test' + i + '.js'));
   }
 
-  var testsCompleted = 0, testsPassed;
+  var testsCompleted = 0, testsPassed = 0;
 
   function fail(err, callback) {
     console.log('Test ' + testsCompleted + ' failed: '.red, err);
@@ -33,7 +33,7 @@ socket.on('connect', function() {
   }
   function pass(msg, callback) {
     testsPassed ++;
-    console.log('Test ' + testsCompleted + ' passed...... ', msg);
+    console.log(('Test ' + testsCompleted + ' passed...... ').green, msg);
     callback();
   }
 
@@ -43,7 +43,7 @@ socket.on('connect', function() {
     if (testsCompleted <= testArray.length) {
       clearDB(function (db) {
         console.log('Starting test ' + testsCompleted);
-        testArray[testsCompleted - 1](socket, db, callback);
+        testArray[testsCompleted - 1](socket, db, nextTest, fail, pass);
       });
     }
     else {
@@ -51,6 +51,7 @@ socket.on('connect', function() {
       var msg = 'All tests completed, '+testsPassed+'/'+testsCompleted+' passed.';
       if (testsPassed == testsCompleted) console.log(msg.green);
       else console.log(msg.red);
+      process.exit(0);
     }
   }
 

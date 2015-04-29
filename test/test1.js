@@ -1,4 +1,4 @@
-module.exports = function (socket, db, callback) {
+module.exports = function (socket, db, callback, fail, pass) {
 	// Test 1 - Customer Register pass //
 
   var message = {

@@ -135,7 +135,9 @@ module.exports = function(server, socket, stripe) {
         console.log('deals: ' + socket.user.email);
       }
 
-      server.db['deals'].find().toArray(function (err, docs) {
+      server.db['deals'].find({
+        "claimed": { "$exists": false }
+      }).toArray(function (err, docs) {
         if (err == null) succeed(docs);
         else fail();
       });

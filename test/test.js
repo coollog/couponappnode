@@ -20,7 +20,7 @@ socket.on('connect', function() {
   console.log('Connected to ' + url);
 
   // make this into for-loop
-  var numTests = 5, testArray = [];
+  var numTests = 7, testArray = [];
   for (var i = 1; i <= numTests; i ++) {
     testArray.push(require('./test' + i + '.js'));
   }

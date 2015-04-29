@@ -25,7 +25,7 @@ module.exports = function (socket, db, callback) {
         // check database for customer information
         db.collection('customers').findOne(message, function (err, doc) {
           if (err == null && doc != null) {
-            succeed('existing customer login', callback);
+            pass('existing customer login', callback);
           } else {
             fail(err, callback);
           }

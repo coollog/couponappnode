@@ -23,7 +23,7 @@ module.exports = function (socket, db, callback) {
     	// check database for customer info
     	db.collection('customers').findOne(message, function (err, doc) {
     		if (err == null && doc != null) {
-    			succeed('new customer register', callback);
+    			pass('new customer register', callback);
     		} else {
     			fail(err, callback);
     		}

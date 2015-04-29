@@ -16,7 +16,7 @@ module.exports = function (socket, db, callback) {
     socket.on('customer register fail', function (err) {
       if (!response) {
         response = 1;
-        succeed('attempted customer register (email already taken)', callback);
+        pass('attempted customer register (email already taken)', callback);
       }
     })
     socket.on('customer register succeed', function() {

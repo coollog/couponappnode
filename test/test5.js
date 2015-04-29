@@ -52,7 +52,7 @@ module.exports = function (socket, db, callback) {
                 // ALSO FIND OUT WHAT MAKES DOC NULL?!?!?! (NO PASSWORD DOES FOR SURE)
                 // console.log(doc)
                 // doesn't seem to keep the claimed[], stripeid, etc !!!
-                succeed('existing customer update', callback);
+                pass('existing customer update', callback);
               } else {
                 // console.log(err + ' and doc: ' + doc)
                 fail(err, callback);

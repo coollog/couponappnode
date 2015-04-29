@@ -28,6 +28,10 @@ socket.on('connect', function() {
     console.log('Test ' + testsCompleted + ' failed: ', err);
     callback();
   }
+  function pass(msg, callback) {
+    console.log('Test ' + testsCompleted + ' passed...... ', msg);
+    callback();
+  }
 
   function nextTest() {
     testsCompleted ++;

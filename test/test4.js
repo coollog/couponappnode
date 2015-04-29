@@ -12,7 +12,7 @@ module.exports = function (socket, db, callback) {
   socket.on('customer login fail', function (err) {
     if (!response) {
       response = 1;
-      succeed('attempted customer login (email does not exist)', callback);
+      pass('attempted customer login (email does not exist)', callback);
     }
   });
   socket.on('customer login succeed', function() {

@@ -7,19 +7,25 @@ module.exports = function (socket, db, callback, fail, pass) {
   // register and login business, then create some deals
   testhelpers.businessLogin(function () {
     // add two deals
-    testhelpers.createDeal(function () {
+    //testhelpers.createDeal(function () {
       testhelpers.createDeal(function () {
         socket.emit('business deals');
-        socket.on('business deals', function(deals) {
+        socket.on('business deals', function() {
           if (!response) {
-            console.log(deals)
-            if (deals.length == 2)
-              pass('business view deals', callback);
-            else
-              fail('business view deals fails', callback);
+            response = 1;
+            db.collection('deals').count(function(err, count) {
+              if (err)
+                fail('business view deals fails', callback);
+              else
+                if (count == 2)
+                  pass('business view deals', callback);
+                else 
+                  fail('business view deals has wrong #', callback);
+            })
+              
           }
         });
       });
-    });
+    // });
   });
 }

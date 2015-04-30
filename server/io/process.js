@@ -510,7 +510,7 @@ module.exports = function(server, socket, stripe) {
         socket.emit('business deals', deals);
         console.log('business deals: ' + socket.user.email);
       }
-
+      
       server.db['deals'].find({
         _id: socket.user._id
       }).toArray(function (err, docs) {

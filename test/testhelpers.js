@@ -73,6 +73,14 @@ module.exports = function (socket, db) {
             response = 1;
             callback();
           }
+        });
+
+        socket.on('claim deal fail', function(err) {
+          if (!response) {
+            response = 1;
+            console.log('testhelpers claimDeal failed: ', err);
+            callback();
+          }
         })
       }
     });

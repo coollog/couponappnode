@@ -19,7 +19,7 @@ socket.on('connect_error', function(error) {
 socket.on('connect', function() {
   console.log('Connected to ' + url);
 
-  var numTests = 18, testArray = [];
+  var numTests = 19, testArray = [];
   for (var i = 1; i <= numTests; i ++) {
     testArray.push(require('./test' + i + '.js'));
   }
@@ -66,11 +66,12 @@ socket.on('connect', function() {
         else {
           var numColl = collNames.length - 1;
           collNames.forEach(function (collection, index) {
-            collection.drop()
-            if (index == numColl) {
-              console.log('mongodb cleared');
-              callback(db);
-            } 
+            collection.drop(function(err, reply) {
+              if (index == numColl) {
+                console.log('mongodb cleared');
+                callback(db);
+              } 
+            });
           });
         }
       });

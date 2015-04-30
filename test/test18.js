@@ -1,6 +1,6 @@
 module.exports = function (socket, db, callback, fail, pass) {
   // Test 18 - Customer Use Deal pass //
-  // includes: business login, business add deal, customer login, customer claim deal, customer view claimed deals, customer use deal
+  // includes: business login, business add deal, customer login, customer claim deal, customer view claimed deals, use deal
 
   var response = 0, responseone = 0;
   var testhelpers = require('./testhelpers.js')(socket, db);

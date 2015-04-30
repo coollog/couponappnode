@@ -21,7 +21,7 @@ module.exports = function (socket, db, callback, fail, pass) {
                 if (err)
                   fail(err, callback);
                 else {
-                
+                  // attempt to claim deal
                   socket.emit('claim deal', doc);
                   var responseone = 0;
 

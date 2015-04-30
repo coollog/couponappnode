@@ -14,23 +14,26 @@ module.exports = function (socket, db, callback, fail, pass) {
         testhelpers.customerLogin(function() {
           // claim both deals
           testhelpers.claimDeal(function() {
-            testhelpers.claimDeal(function() {
+            // alter first deal claimed
+            db.collection('deals').findOneAndUpdate({startPrice: '$15'}, {$set: {startPrice: '$16'}}, function (err) {
+              testhelpers.claimDeal(function() {
 
-              // view claimed deals
-              socket.emit('customer deals', {email: 'jchirik@gmail.com'});
+                // view claimed deals
+                socket.emit('customer deals', {email: 'jchirik@gmail.com'});
 
-              socket.on('customer deals', function(deals) {
-                if (!response) {
-                  response = 1;
-                  // check that two were added
-                  if (deals.length == 2)
-                    pass('customer view list of claimed deals (2)', callback);
-                  else
-                    fail('customer view list of claimed deals wrong #', callback);
-                }
+                socket.on('customer deals', function(deals) {
+                  if (!response) {
+                    response = 1;
+                    // check that two were added
+                    if (deals.length == 2)
+                      pass('customer view list of claimed deals (2)', callback);
+                    else
+                      fail('customer view list of claimed deals wrong #', callback);
+                  }
+                });
               });
-            });
 
+            });
           });
         });
       });

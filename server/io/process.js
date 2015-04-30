@@ -158,7 +158,7 @@ module.exports = function(server, socket, stripe) {
       }
       
       server.db['deals'].findOne({
-        _id: data._id
+        _id: new ObjectID(data._id)
       }, function (err, doc) {
         if (err == null) succeed(doc);
         else fail('nonexistent deal');

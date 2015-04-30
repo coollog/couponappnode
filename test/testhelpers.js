@@ -49,7 +49,6 @@ module.exports = function (socket, db) {
     }
     if (count == 0) {
       count ++;
-      console.log('emitting...')
       socket.emit('put deal', dealdata);
     }
     socket.on('put deal succeed', function() {
@@ -58,7 +57,26 @@ module.exports = function (socket, db) {
         callback();
       }
     });
-  }
+  };
+
+  this.claimDeal = function (callback) {
+    var response = 0;
+    db.collection('deals').findOne({startPrice: '$15'}, function(err, doc) {
+      if (err) {
+        console.log('claiming deal failed!');
+        callback();
+      }
+      else {
+        socket.emit('claim deal', doc);
+        socket.on('claim deal succeed', function() {
+          if (!response) {
+            response = 1;
+            callback();
+          }
+        })
+      }
+    });
+  };
 
   return this;
 }; 
